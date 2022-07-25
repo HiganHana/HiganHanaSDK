@@ -1,0 +1,42 @@
+from hondex.profile import load_all
+from hondex_model.battlesuit import Battlesuit
+from hondex_model.stigmataSet import StigmataSet
+from flask import Blueprint
+from higanhana_sdk.utils.flask import jsonify
+load_all()
+
+bp = Blueprint("honkaidex", __name__)
+
+@bp.route("/stig/<str:stig_name>/<int:confidence>")
+def stig(stig_name, confidence):
+    stigs = StigmataSet.fuzzy_match_field("name", confidence=confidence)
+    if len(stigs) > 0 and stigs[0][1] >= confidence:
+        return jsonify(
+            message="Stigamata found",
+            status_code=200,
+            success=True,
+            data=stigs[0][0].to_json(),
+            match_by = "name",
+            confidence = stigs[0][1],
+            min_confidence = confidence
+        )
+
+    stigs = StigmataSet.fuzzy_match_nicknames(stig_name)
+    if len(stigs) > 0 and stigs[0][1] >= confidence:
+        return jsonify(
+            message="Stigamata found",
+            status_code=200,
+            success=True,
+            data=stigs[0][0].to_json(),
+            match_by = "nickname",
+            confidence = stigs[0][1],
+            min_confidence = confidence
+        )
+
+    return jsonify(
+        message="No stigamata found",
+        status_code=404,
+        success=False,
+        min_confidence = confidence
+    )
+

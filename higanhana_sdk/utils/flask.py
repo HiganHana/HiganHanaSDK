@@ -1,7 +1,10 @@
+from pprint import pformat
 from flask import Flask, Blueprint
 import inspect
 import os
 import importlib
+from flask import make_response
+from json import dumps
 
 def setup_flask_cogs(flaskApp : Flask, string : str) -> None:
 
@@ -14,6 +17,9 @@ def setup_flask_cogs(flaskApp : Flask, string : str) -> None:
                     flaskApp.register_blueprint(obj, url_prefix=f"/{obj.name}/")
 
 
-def jsonify(message :str, status_code : int = 200, **kwargs) -> dict:
-    return {"message": message, "status_code": status_code, **kwargs}
-    
+def jsonify(status=200, indent=4, sort_keys=True, **kwargs):
+    response = make_response(dumps(dict(**kwargs), indent=indent, sort_keys=sort_keys))
+    response.headers['Content-Type'] = 'application/json; charset=utf-8'
+    response.headers['mimetype'] = 'application/json'
+    response.status_code = status
+    return response

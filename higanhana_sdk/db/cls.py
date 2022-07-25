@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 import typing
 
 from higanhana_sdk.db.clsi import DBClsInterface
@@ -21,10 +22,15 @@ class HoyovalkImageCache(DBClsInterface):
     cache : bytes
 
 @dataclass
-class HoyovalkCombinedCache(DBClsInterface):
-    uid : int
+class HoyovalkCharacterData(DBClsInterface):
+    honkai_uid_character : str
     weapon : int
     stigT : int
     stigM : int
     stigB : int
+    fetched_time : datetime
+
+@dataclass
+class HoyovalkCombinedCache(DBClsInterface):
+    uid : str
     cache : bytes

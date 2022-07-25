@@ -17,7 +17,7 @@ class t_genshin(unittest.IsolatedAsyncioTestCase):
         
 
     async def test_genshin_1(self):
-        await self.hv.getCharacters(104373522)
+        data = await self.genshinClient.get_honkai_battlesuits(104373522)
         pass
     
 

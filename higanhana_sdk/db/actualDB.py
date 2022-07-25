@@ -1,6 +1,7 @@
 from dataclasses import dataclass
+from datetime import datetime
 import os
-from higanhana_sdk.db.cls import Profile, HoyovalkImageCache, HoyovalkCombinedCache, UserTag
+from higanhana_sdk.db.cls import HoyovalkCombinedCache, Profile, HoyovalkImageCache, HoyovalkCharacterData, UserTag
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
 
@@ -39,14 +40,32 @@ class DBHoyovalkImageCache(HoyovalkImageCache, db.Model):
     cache = db.Column(db.LargeBinary)
 
 @dataclass
+class DBHoyovalkCharacterData(HoyovalkCharacterData, db.Model):
+    __tablename__ = "character_data"
+    __bind_key__ = "hoyovalk"
+    honkai_uid_character = db.Column(db.String, primary_key=True)
+    weapon = db.Column(db.Integer, nullable=False)
+    stigT = db.Column(db.Integer,  nullable=False)
+    stigM = db.Column(db.Integer,  nullable=False)
+    stigB = db.Column(db.Integer,  nullable=False)
+    fetched_time = db.Column(db.DateTime, nullable=False)
+
+    @classmethod
+    def create(cls, honkai_uid, character_uid, weapon, stigT, stigM, stigB):
+        return cls(
+            honkai_uid_character=f"{honkai_uid}-{character_uid}",
+            weapon=weapon, 
+            stigT=stigT, 
+            stigM=stigM, 
+            stigB=stigB, 
+            fetched_time=datetime.now()
+        )
+
+@dataclass
 class DBHoyovalkCombinedCache(HoyovalkCombinedCache, db.Model):
     __tablename__ = "combined_cache"
     __bind_key__ = "hoyovalk"
-    uid = db.Column(db.Integer, primary_key=True)
-    weapon = db.Column(db.Integer)
-    stigT = db.Column(db.Integer)
-    stigM = db.Column(db.Integer)
-    stigB = db.Column(db.Integer)
+    uid = db.Column(db.String, primary_key=True)
     cache = db.Column(db.LargeBinary)
 
 db.create_all()
